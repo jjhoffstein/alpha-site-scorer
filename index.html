@@ -1,9 +1,8 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Alpha Site Pipeline Dashboard</title>
-<meta name="description" content="AI-powered site viability scoring for school expansion - 15 sites evaluated">
+<meta name="description" content="AI-powered site viability scoring for school expansion">
 <meta property="og:title" content="Alpha Site Pipeline Dashboard">
-<meta property="og:description" content="13 sites recommended, 2 need review, 0 not viable">
-<meta property="og:type" content="website">
+<meta property="og:description" content="13 recommended, 2 need review, 0 not viable">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -25,8 +24,10 @@ h1{font-size:2.5rem;font-weight:700;color:#0f172a;margin-bottom:8px}
 .card.go{border-left-color:#16a34a}
 .card.caution{border-left-color:#ca8a04}
 .card.nogo{border-left-color:#dc2626}
-.rank{position:absolute;top:12px;right:12px;background:#f1f5f9;color:#64748b;padding:4px 10px;border-radius:20px;font-size:0.75rem;font-weight:600}
-h3{font-size:1.1rem;font-weight:600;margin-bottom:4px;padding-right:50px}
+.rank{position:absolute;top:12px;right:50px;background:#f1f5f9;color:#64748b;padding:4px 10px;border-radius:20px;font-size:0.75rem;font-weight:600}
+.edit-btn{position:absolute;top:10px;right:12px;background:none;border:none;cursor:pointer;font-size:1rem;padding:4px 8px;border-radius:6px;opacity:0.5;transition:opacity 0.2s}
+.edit-btn:hover{opacity:1;background:#f1f5f9}
+h3{font-size:1.1rem;font-weight:600;margin-bottom:4px;padding-right:80px}
 .address{color:#64748b;font-size:0.85rem;margin-bottom:8px}
 .demo,.cost{display:flex;gap:8px;margin-bottom:8px;font-size:0.8rem;flex-wrap:wrap}
 .demo span{background:#eef2ff;color:#6366f1;padding:2px 8px;border-radius:4px}
@@ -36,7 +37,7 @@ h3{font-size:1.1rem;font-weight:600;margin-bottom:4px;padding-right:50px}
 .label{display:block;color:#94a3b8;font-size:0.7rem;text-transform:uppercase}
 .value{font-weight:600;font-size:0.9rem}
 .score-bar{background:#e2e8f0;height:8px;border-radius:4px;overflow:hidden;margin-bottom:8px}
-.fill{height:100%;background:linear-gradient(90deg,#16a34a,#22c55e);border-radius:4px;transition:width 0.3s}
+.fill{height:100%;background:linear-gradient(90deg,#16a34a,#22c55e);border-radius:4px}
 .card.caution .fill{background:linear-gradient(90deg,#ca8a04,#eab308)}
 .card.nogo .fill{background:linear-gradient(90deg,#dc2626,#ef4444)}
 .score{font-size:1.4rem;font-weight:700}.score span{color:#94a3b8;font-size:0.9rem}
@@ -46,32 +47,34 @@ h3{font-size:1.1rem;font-weight:600;margin-bottom:4px;padding-right:50px}
 .card.nogo .decision{background:#fee2e2;color:#dc2626}
 .weak{color:#64748b;font-size:0.8rem}
 footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.8rem}
-@media(max-width:640px){
-  h1{font-size:1.75rem}
-  .summary{gap:10px}
-  .stat-box{padding:12px 20px;min-width:100px}
-  .stat-box .num{font-size:1.5rem}
-  .grid{grid-template-columns:1fr}
-  .stats{flex-wrap:wrap}
-  .stats div{min-width:30%}
-}
-@media print{
-  body{background:white}
-  .card{box-shadow:none;border:1px solid #e2e8f0;break-inside:avoid}
-  .score-bar{print-color-adjust:exact;-webkit-print-color-adjust:exact}
-}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center}
+.modal.active{display:flex}
+.modal-content{background:white;padding:24px;border-radius:16px;width:90%;max-width:500px;max-height:90vh;overflow-y:auto}
+.modal h2{margin-bottom:16px;font-size:1.25rem}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:0.85rem;color:#64748b;margin-bottom:4px}
+.form-group input,.form-group select{width:100%;padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:0.9rem}
+.form-group input[type="checkbox"]{width:auto}
+.checkbox-group{display:flex;align-items:center;gap:8px}
+.btn-row{display:flex;gap:12px;margin-top:20px}
+.btn{padding:10px 20px;border-radius:8px;font-weight:600;cursor:pointer;border:none;font-size:0.9rem}
+.btn-primary{background:#3b82f6;color:white}
+.btn-secondary{background:#e2e8f0;color:#64748b}
+.btn-danger{background:#fee2e2;color:#dc2626}
+@media(max-width:640px){h1{font-size:1.75rem}.grid{grid-template-columns:1fr}}
 </style></head>
 <body><div class="container">
 <header><h1>🏫 Alpha Site Pipeline</h1><p class="subtitle">AI-Powered Site Viability Scoring System</p></header>
 <main>
-<div class="summary" role="status" aria-label="Pipeline summary">
+<div class="summary">
 <div class="stat-box"><div class="num">15</div><div class="lbl">Sites Evaluated</div></div>
 <div class="stat-box green"><div class="num">13</div><div class="lbl">✅ Green (75+)</div></div>
 <div class="stat-box yellow"><div class="num">2</div><div class="lbl">⚠️ Yellow (50-74)</div></div>
 <div class="stat-box red"><div class="num">0</div><div class="lbl">❌ Red (&lt;50)</div></div>
 </div>
-<div class="grid"><article class="card go">
+<div class="grid"><article class="card go" data-index="0">
         <div class="rank">#1</div>
+        <button class="edit-btn" onclick="editSite(0)">✏️</button>
         <h3>Charlotte</h3>
         <p class="address">4400 Sharon Rd (28211)</p>
         <div class="demo"><span>Pop: 31,581</span><span>Income: $101,827</span></div>
@@ -81,13 +84,14 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.8rem}
             <div><span class="label">$/sqft</span><span class="value">$1.52</span></div>
         </div>
         <div class="cost"><span>Break-even: 30 students</span><span>Capacity: 250</span></div>
-        <div class="score-bar" role="progressbar" aria-valuenow="98" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:97.92%"></div></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="98"><div class="fill" style="width:97.92%"></div></div>
         <div class="score">97.9<span>/100</span></div>
         <div class="decision">✅ GREEN</div>
         <div class="weak">✓ No weak areas</div>
     </article>
-<article class="card go">
+<article class="card go" data-index="1">
         <div class="rank">#2</div>
+        <button class="edit-btn" onclick="editSite(1)">✏️</button>
         <h3>Austin Mueller</h3>
         <p class="address">1900 Aldrich St (78723)</p>
         <div class="demo"><span>Pop: 36,114</span><span>Income: $76,535</span></div>
@@ -97,13 +101,14 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.8rem}
             <div><span class="label">$/sqft</span><span class="value">$1.31</span></div>
         </div>
         <div class="cost"><span>Break-even: 30 students</span><span>Capacity: 290</span></div>
-        <div class="score-bar" role="progressbar" aria-valuenow="96" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:96.41212068965517%"></div></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="96"><div class="fill" style="width:96.41212068965517%"></div></div>
         <div class="score">96.4<span>/100</span></div>
         <div class="decision">✅ GREEN</div>
         <div class="weak">✓ No weak areas</div>
     </article>
-<article class="card go">
+<article class="card go" data-index="2">
         <div class="rank">#3</div>
+        <button class="edit-btn" onclick="editSite(2)">✏️</button>
         <h3>Raleigh NC</h3>
         <p class="address">4601 Six Forks Rd (27609)</p>
         <div class="demo"><span>Pop: 35,377</span><span>Income: $73,979</span></div>
@@ -113,13 +118,14 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.8rem}
             <div><span class="label">$/sqft</span><span class="value">$1.38</span></div>
         </div>
         <div class="cost"><span>Break-even: 30 students</span><span>Capacity: 260</span></div>
-        <div class="score-bar" role="progressbar" aria-valuenow="96" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:95.85943846153846%"></div></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="96"><div class="fill" style="width:95.85943846153846%"></div></div>
         <div class="score">95.9<span>/100</span></div>
         <div class="decision">✅ GREEN</div>
         <div class="weak">✓ No weak areas</div>
     </article>
-<article class="card go">
+<article class="card go" data-index="3">
         <div class="rank">#4</div>
+        <button class="edit-btn" onclick="editSite(3)">✏️</button>
         <h3>Orlando</h3>
         <p class="address">7600 Dr Phillips Blvd (32819)</p>
         <div class="demo"><span>Pop: 28,765</span><span>Income: $76,218</span></div>
@@ -129,13 +135,14 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.8rem}
             <div><span class="label">$/sqft</span><span class="value">$1.43</span></div>
         </div>
         <div class="cost"><span>Break-even: 31 students</span><span>Capacity: 280</span></div>
-        <div class="score-bar" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:95.49584761904762%"></div></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="95"><div class="fill" style="width:95.49584761904762%"></div></div>
         <div class="score">95.5<span>/100</span></div>
         <div class="decision">✅ GREEN</div>
         <div class="weak">✓ No weak areas</div>
     </article>
-<article class="card go">
+<article class="card go" data-index="4">
         <div class="rank">#5</div>
+        <button class="edit-btn" onclick="editSite(4)">✏️</button>
         <h3>Houston Galleria</h3>
         <p class="address">5000 Westheimer Rd (77056)</p>
         <div class="demo"><span>Pop: 22,062</span><span>Income: $101,563</span></div>
@@ -145,13 +152,14 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.8rem}
             <div><span class="label">$/sqft</span><span class="value">$1.62</span></div>
         </div>
         <div class="cost"><span>Break-even: 43 students</span><span>Capacity: 320</span></div>
-        <div class="score-bar" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:94.854%"></div></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="95"><div class="fill" style="width:94.854%"></div></div>
         <div class="score">94.9<span>/100</span></div>
         <div class="decision">✅ GREEN</div>
         <div class="weak">✓ No weak areas</div>
     </article>
-<article class="card go">
+<article class="card go" data-index="5">
         <div class="rank">#6</div>
+        <button class="edit-btn" onclick="editSite(5)">✏️</button>
         <h3>Brownsville TX</h3>
         <p class="address">1200 E Price Rd (78521)</p>
         <div class="demo"><span>Pop: 88,791</span><span>Income: $35,318</span></div>
@@ -161,13 +169,14 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.8rem}
             <div><span class="label">$/sqft</span><span class="value">$0.75</span></div>
         </div>
         <div class="cost"><span>Break-even: 32 students</span><span>Capacity: 320</span></div>
-        <div class="score-bar" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:94.5318%"></div></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="95"><div class="fill" style="width:94.5318%"></div></div>
         <div class="score">94.5<span>/100</span></div>
         <div class="decision">✅ GREEN</div>
         <div class="weak">Weak: income</div>
     </article>
-<article class="card go">
+<article class="card go" data-index="6">
         <div class="rank">#7</div>
+        <button class="edit-btn" onclick="editSite(6)">✏️</button>
         <h3>Miami Tropical Park</h3>
         <p class="address">8000 SW 56th St (33155)</p>
         <div class="demo"><span>Pop: 44,440</span><span>Income: $71,646</span></div>
@@ -177,13 +186,14 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.8rem}
             <div><span class="label">$/sqft</span><span class="value">$1.87</span></div>
         </div>
         <div class="cost"><span>Break-even: 45 students</span><span>Capacity: 300</span></div>
-        <div class="score-bar" role="progressbar" aria-valuenow="94" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:93.69793333333334%"></div></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="94"><div class="fill" style="width:93.69793333333334%"></div></div>
         <div class="score">93.7<span>/100</span></div>
         <div class="decision">✅ GREEN</div>
         <div class="weak">Weak: cost</div>
     </article>
-<article class="card go">
+<article class="card go" data-index="7">
         <div class="rank">#8</div>
+        <button class="edit-btn" onclick="editSite(7)">✏️</button>
         <h3>Dallas Uptown</h3>
         <p class="address">2500 McKinney Ave (75201)</p>
         <div class="demo"><span>Pop: 17,491</span><span>Income: $95,907</span></div>
@@ -193,13 +203,14 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.8rem}
             <div><span class="label">$/sqft</span><span class="value">$1.62</span></div>
         </div>
         <div class="cost"><span>Break-even: 32 students</span><span>Capacity: 260</span></div>
-        <div class="score-bar" role="progressbar" aria-valuenow="93" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:92.95949487179487%"></div></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="93"><div class="fill" style="width:92.95949487179487%"></div></div>
         <div class="score">93.0<span>/100</span></div>
         <div class="decision">✅ GREEN</div>
         <div class="weak">✓ No weak areas</div>
     </article>
-<article class="card go">
+<article class="card go" data-index="8">
         <div class="rank">#9</div>
+        <button class="edit-btn" onclick="editSite(8)">✏️</button>
         <h3>Scottsdale</h3>
         <p class="address">7001 N Scottsdale Rd (85253)</p>
         <div class="demo"><span>Pop: 17,212</span><span>Income: $159,846</span></div>
@@ -209,13 +220,14 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.8rem}
             <div><span class="label">$/sqft</span><span class="value">$1.83</span></div>
         </div>
         <div class="cost"><span>Break-even: 33 students</span><span>Capacity: 240</span></div>
-        <div class="score-bar" role="progressbar" aria-valuenow="92" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:92.404%"></div></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="92"><div class="fill" style="width:92.404%"></div></div>
         <div class="score">92.4<span>/100</span></div>
         <div class="decision">✅ GREEN</div>
         <div class="weak">Weak: cost</div>
     </article>
-<article class="card go">
+<article class="card go" data-index="9">
         <div class="rank">#10</div>
+        <button class="edit-btn" onclick="editSite(9)">✏️</button>
         <h3>NYC Financial District</h3>
         <p class="address">180 Maiden Lane (10038)</p>
         <div class="demo"><span>Pop: 23,356</span><span>Income: $99,924</span></div>
@@ -225,13 +237,14 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.8rem}
             <div><span class="label">$/sqft</span><span class="value">$4.72</span></div>
         </div>
         <div class="cost"><span>Break-even: 91 students</span><span>Capacity: 360</span></div>
-        <div class="score-bar" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:89.77773333333333%"></div></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="90"><div class="fill" style="width:89.77773333333333%"></div></div>
         <div class="score">89.8<span>/100</span></div>
         <div class="decision">✅ GREEN</div>
         <div class="weak">Weak: cost</div>
     </article>
-<article class="card go">
+<article class="card go" data-index="10">
         <div class="rank">#11</div>
+        <button class="edit-btn" onclick="editSite(10)">✏️</button>
         <h3>Palm Beach</h3>
         <p class="address">300 S County Rd (33480)</p>
         <div class="demo"><span>Pop: 11,050</span><span>Income: $144,300</span></div>
@@ -241,13 +254,14 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.8rem}
             <div><span class="label">$/sqft</span><span class="value">$3.18</span></div>
         </div>
         <div class="cost"><span>Break-even: 43 students</span><span>Capacity: 220</span></div>
-        <div class="score-bar" role="progressbar" aria-valuenow="86" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:85.68333333333334%"></div></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="86"><div class="fill" style="width:85.68333333333334%"></div></div>
         <div class="score">85.7<span>/100</span></div>
         <div class="decision">✅ GREEN</div>
         <div class="weak">Weak: cost, pop</div>
     </article>
-<article class="card go">
+<article class="card go" data-index="11">
         <div class="rank">#12</div>
+        <button class="edit-btn" onclick="editSite(11)">✏️</button>
         <h3>Rural Kansas</h3>
         <p class="address">100 Main St (67401)</p>
         <div class="demo"><span>Pop: 50,827</span><span>Income: $54,387</span></div>
@@ -257,13 +271,14 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.8rem}
             <div><span class="label">$/sqft</span><span class="value">$0.50</span></div>
         </div>
         <div class="cost"><span>Break-even: 2 students</span><span>Capacity: 80</span></div>
-        <div class="score-bar" role="progressbar" aria-valuenow="79" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:79.48631904761905%"></div></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="79"><div class="fill" style="width:79.48631904761905%"></div></div>
         <div class="score">79.5<span>/100</span></div>
         <div class="decision">✅ GREEN</div>
         <div class="weak">Weak: kitchen</div>
     </article>
-<article class="card go">
+<article class="card go" data-index="12">
         <div class="rank">#13</div>
+        <button class="edit-btn" onclick="editSite(12)">✏️</button>
         <h3>Denver</h3>
         <p class="address">1600 Glenarm Pl (80202)</p>
         <div class="demo"><span>Pop: 16,952</span><span>Income: $97,230</span></div>
@@ -273,13 +288,14 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.8rem}
             <div><span class="label">$/sqft</span><span class="value">$2.18</span></div>
         </div>
         <div class="cost"><span>Break-even: 34 students</span><span>Capacity: 220</span></div>
-        <div class="score-bar" role="progressbar" aria-valuenow="76" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:75.64639393939395%"></div></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="76"><div class="fill" style="width:75.64639393939395%"></div></div>
         <div class="score">75.6<span>/100</span></div>
         <div class="decision">✅ GREEN</div>
         <div class="weak">Weak: driveway, cost</div>
     </article>
-<article class="card caution">
+<article class="card caution" data-index="13">
         <div class="rank">#14</div>
+        <button class="edit-btn" onclick="editSite(13)">✏️</button>
         <h3>San Francisco SOMA</h3>
         <p class="address">500 Folsom St (94105)</p>
         <div class="demo"><span>Pop: 13,810</span><span>Income: $244,662</span></div>
@@ -289,13 +305,14 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.8rem}
             <div><span class="label">$/sqft</span><span class="value">$4.64</span></div>
         </div>
         <div class="cost"><span>Break-even: 67 students</span><span>Capacity: 280</span></div>
-        <div class="score-bar" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:74.60333333333334%"></div></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="75"><div class="fill" style="width:74.60333333333334%"></div></div>
         <div class="score">74.6<span>/100</span></div>
         <div class="decision">⚠️ YELLOW</div>
         <div class="weak">Weak: kitchen, cost, pop</div>
     </article>
-<article class="card caution">
+<article class="card caution" data-index="14">
         <div class="rank">#15</div>
+        <button class="edit-btn" onclick="editSite(14)">✏️</button>
         <h3>Detroit Warehouse</h3>
         <p class="address">5000 Michigan Ave (48210)</p>
         <div class="demo"><span>Pop: 27,127</span><span>Income: $33,711</span></div>
@@ -305,11 +322,83 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.8rem}
             <div><span class="label">$/sqft</span><span class="value">$0.32</span></div>
         </div>
         <div class="cost"><span>Break-even: 44 students</span><span>Capacity: 500</span></div>
-        <div class="score-bar" role="progressbar" aria-valuenow="56" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:56.13343333333333%"></div></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="56"><div class="fill" style="width:56.13343333333333%"></div></div>
         <div class="score">56.1<span>/100</span></div>
         <div class="decision">⚠️ YELLOW</div>
         <div class="weak">Weak: driveway, outdoor, kitchen, income</div>
     </article></div>
 </main>
-<footer>Generated by Site Scorer • Demographics via US Census API • Break-even assumes $15k tuition</footer>
-</div></body></html>
+<footer>Generated by Site Scorer • Click ✏️ to edit • Changes saved locally</footer>
+</div>
+
+<div class="modal" id="editModal">
+<div class="modal-content">
+<h2>Edit Site</h2>
+<div class="form-group"><label>Name</label><input type="text" id="edit-name"></div>
+<div class="form-group"><label>Address</label><input type="text" id="edit-address"></div>
+<div class="form-group"><label>Zip Code</label><input type="text" id="edit-zip"></div>
+<div class="form-group"><label>Square Footage</label><input type="number" id="edit-sqft"></div>
+<div class="form-group"><label>Monthly Rent ($)</label><input type="number" id="edit-rent"></div>
+<div class="form-group checkbox-group"><input type="checkbox" id="edit-driveway"><label>Has Driveway</label></div>
+<div class="form-group checkbox-group"><input type="checkbox" id="edit-outdoor"><label>Has Outdoor Space</label></div>
+<div class="form-group checkbox-group"><input type="checkbox" id="edit-kitchen"><label>Has Kitchen Area</label></div>
+<div class="form-group checkbox-group"><input type="checkbox" id="edit-zoning"><label>Zoning Clear</label></div>
+<div class="btn-row">
+<button class="btn btn-primary" onclick="saveSite()">Save Changes</button>
+<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+<button class="btn btn-danger" onclick="deleteSite()">Delete</button>
+</div>
+</div>
+</div>
+
+<script>
+let sites = [{"name": "Charlotte", "address": "4400 Sharon Rd", "sqft": 12500, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 19000, "parking_spots": 0, "zoning_clear": true, "zip_code": "28211", "status": "Sourced"}, {"name": "Austin Mueller", "address": "1900 Aldrich St", "sqft": 14500, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 19000, "parking_spots": 0, "zoning_clear": true, "zip_code": "78723", "status": "Sourced"}, {"name": "Raleigh NC", "address": "4601 Six Forks Rd", "sqft": 13000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 18000, "parking_spots": 0, "zoning_clear": true, "zip_code": "27609", "status": "Sourced"}, {"name": "Orlando", "address": "7600 Dr Phillips Blvd", "sqft": 14000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 20000, "parking_spots": 0, "zoning_clear": true, "zip_code": "32819", "status": "Sourced"}, {"name": "Houston Galleria", "address": "5000 Westheimer Rd", "sqft": 16000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 26000, "parking_spots": 0, "zoning_clear": true, "zip_code": "77056", "status": "Sourced"}, {"name": "Brownsville TX", "address": "1200 E Price Rd", "sqft": 16000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 12000, "parking_spots": 0, "zoning_clear": true, "zip_code": "78521", "status": "Sourced"}, {"name": "Miami Tropical Park", "address": "8000 SW 56th St", "sqft": 15000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 28000, "parking_spots": 0, "zoning_clear": true, "zip_code": "33155", "status": "Sourced"}, {"name": "Dallas Uptown", "address": "2500 McKinney Ave", "sqft": 13000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 21000, "parking_spots": 0, "zoning_clear": true, "zip_code": "75201", "status": "Sourced"}, {"name": "Scottsdale", "address": "7001 N Scottsdale Rd", "sqft": 12000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 22000, "parking_spots": 0, "zoning_clear": true, "zip_code": "85253", "status": "Sourced"}, {"name": "NYC Financial District", "address": "180 Maiden Lane", "sqft": 18000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 85000, "parking_spots": 0, "zoning_clear": true, "zip_code": "10038", "status": "Sourced"}, {"name": "Palm Beach", "address": "300 S County Rd", "sqft": 11000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 35000, "parking_spots": 0, "zoning_clear": true, "zip_code": "33480", "status": "Sourced"}, {"name": "Rural Kansas", "address": "100 Main St", "sqft": 4000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": false, "monthly_rent": 2000, "parking_spots": 0, "zoning_clear": true, "zip_code": "67401", "status": "Sourced"}, {"name": "Denver", "address": "1600 Glenarm Pl", "sqft": 11000, "has_driveway": false, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 24000, "parking_spots": 0, "zoning_clear": true, "zip_code": "80202", "status": "Sourced"}, {"name": "San Francisco SOMA", "address": "500 Folsom St", "sqft": 14000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": false, "monthly_rent": 65000, "parking_spots": 0, "zoning_clear": true, "zip_code": "94105", "status": "Sourced"}, {"name": "Detroit Warehouse", "address": "5000 Michigan Ave", "sqft": 25000, "has_driveway": false, "has_outdoor_space": false, "has_kitchen_area": false, "monthly_rent": 8000, "parking_spots": 0, "zoning_clear": true, "zip_code": "48210", "status": "Sourced"}];
+let editingIndex = -1;
+const stored = localStorage.getItem('alpha-sites');
+if (stored) { sites = JSON.parse(stored); location.reload(); }
+
+function editSite(i) {
+  editingIndex = i;
+  const s = sites[i];
+  document.getElementById('edit-name').value = s.name;
+  document.getElementById('edit-address').value = s.address;
+  document.getElementById('edit-zip').value = s.zip_code || '';
+  document.getElementById('edit-sqft').value = s.sqft;
+  document.getElementById('edit-rent').value = s.monthly_rent;
+  document.getElementById('edit-driveway').checked = s.has_driveway;
+  document.getElementById('edit-outdoor').checked = s.has_outdoor_space;
+  document.getElementById('edit-kitchen').checked = s.has_kitchen_area;
+  document.getElementById('edit-zoning').checked = s.zoning_clear;
+  document.getElementById('editModal').classList.add('active');
+}
+
+function closeModal() { document.getElementById('editModal').classList.remove('active'); }
+
+function saveSite() {
+  sites[editingIndex] = {
+    name: document.getElementById('edit-name').value,
+    address: document.getElementById('edit-address').value,
+    zip_code: document.getElementById('edit-zip').value || null,
+    sqft: parseInt(document.getElementById('edit-sqft').value),
+    monthly_rent: parseInt(document.getElementById('edit-rent').value),
+    has_driveway: document.getElementById('edit-driveway').checked,
+    has_outdoor_space: document.getElementById('edit-outdoor').checked,
+    has_kitchen_area: document.getElementById('edit-kitchen').checked,
+    zoning_clear: document.getElementById('edit-zoning').checked,
+    parking_spots: 0
+  };
+  localStorage.setItem('alpha-sites', JSON.stringify(sites));
+  alert('Changes saved! Refresh page to see updated scores.');
+  closeModal();
+}
+
+function deleteSite() {
+  if (confirm('Delete this site?')) {
+    sites.splice(editingIndex, 1);
+    localStorage.setItem('alpha-sites', JSON.stringify(sites));
+    alert('Site deleted! Refresh page.');
+    closeModal();
+  }
+}
+</script>
+</body></html>
