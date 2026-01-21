@@ -138,8 +138,8 @@ function render() {
       <p class="address">${s.address}${s.zip_code ? ' (' + s.zip_code + ')' : ''}</p>
       <div class="stats">
         <div><span class="label">Sq Ft</span><span class="value">${s.sqft.toLocaleString()}</span></div>
-        <div><span class="label">Rent</span><span class="value">\$${s.monthly_rent.toLocaleString()}/mo</span></div>
-        <div><span class="label">$/sqft</span><span class="value">\$${(s.monthly_rent/s.sqft).toFixed(2)}</span></div>
+        <div><span class="label">Rent</span><span class="value">$${s.monthly_rent.toLocaleString()}/mo</span></div>
+        <div><span class="label">$/sqft</span><span class="value">$${(s.monthly_rent/s.sqft).toFixed(2)}</span></div>
       </div>
       <div class="cost"><span>Break-even: ${c.breakEven} students</span><span>Capacity: ${c.capacity}</span></div>
       <div class="score-bar"><div class="fill" style="width:${r.total}%"></div></div>
