@@ -8,7 +8,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#f8fafc;color:#1e293b;l
 header{text-align:center;margin-bottom:40px}
 h1{font-size:2.5rem;font-weight:700;color:#0f172a;margin-bottom:8px}
 .subtitle{color:#64748b;font-size:1.1rem}
-.summary{display:flex;gap:20px;justify-content:center;margin:30px 0}
+.summary{display:flex;gap:20px;justify-content:center;margin:30px 0;flex-wrap:wrap}
 .stat-box{background:white;padding:20px 40px;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
 .stat-box .num{font-size:2rem;font-weight:700}
 .stat-box .lbl{color:#64748b;font-size:0.9rem}
@@ -20,7 +20,9 @@ h1{font-size:2.5rem;font-weight:700;color:#0f172a;margin-bottom:8px}
 .card.nogo{border-left-color:#dc2626}
 .rank{position:absolute;top:16px;right:16px;background:#f1f5f9;color:#64748b;padding:4px 10px;border-radius:20px;font-size:0.8rem;font-weight:600}
 h3{font-size:1.25rem;font-weight:600;margin-bottom:4px}
-.address{color:#64748b;font-size:0.9rem;margin-bottom:16px}
+.address{color:#64748b;font-size:0.9rem;margin-bottom:8px}
+.demo{display:flex;gap:12px;margin-bottom:12px;font-size:0.85rem;color:#6366f1}
+.demo span{background:#eef2ff;padding:2px 8px;border-radius:4px}
 .stats{display:flex;gap:16px;margin-bottom:16px}
 .stats div{flex:1}
 .label{display:block;color:#94a3b8;font-size:0.75rem;text-transform:uppercase}
@@ -38,14 +40,30 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
 <body><div class="container">
 <header><h1>🏫 Alpha Site Pipeline</h1><p class="subtitle">AI-Powered Site Viability Scoring System</p></header>
 <div class="summary">
-<div class="stat-box"><div class="num">7</div><div class="lbl">Sites Evaluated</div></div>
-<div class="stat-box go"><div class="num">6</div><div class="lbl">Recommended</div></div>
+<div class="stat-box"><div class="num">8</div><div class="lbl">Sites Evaluated</div></div>
+<div class="stat-box go"><div class="num">7</div><div class="lbl">Recommended</div></div>
 <div class="stat-box nogo"><div class="num">1</div><div class="lbl">Not Viable</div></div>
 </div>
 <div class="grid"><div class="card go">
         <div class="rank">#1</div>
+        <h3>Austin Downtown</h3>
+        <p class="address">400 Congress Ave (78701)</p>
+        <div class="demo"><span>Pop: 9,560</span><span>Income: $136,486</span></div>
+        <div class="stats">
+            <div><span class="label">Sq Ft</span><span class="value">14,000</span></div>
+            <div><span class="label">Rent</span><span class="value">$22,000/mo</span></div>
+            <div><span class="label">$/sqft</span><span class="value">$1.57</span></div>
+        </div>
+        <div class="score-bar"><div class="fill" style="width:100%"></div></div>
+        <div class="score">111.9<span>/100</span></div>
+        <div class="decision">GO</div>
+        <div class="weak">Weak: cost</div>
+    </div>
+<div class="card go">
+        <div class="rank">#2</div>
         <h3>New Location</h3>
         <p class="address">789 Test Dr</p>
+        
         <div class="stats">
             <div><span class="label">Sq Ft</span><span class="value">11,000</span></div>
             <div><span class="label">Rent</span><span class="value">$14,000/mo</span></div>
@@ -57,9 +75,10 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
         <div class="weak">Weak: cost</div>
     </div>
 <div class="card go">
-        <div class="rank">#2</div>
+        <div class="rank">#3</div>
         <h3>Former Retail</h3>
         <p class="address">200 Shop Blvd</p>
+        
         <div class="stats">
             <div><span class="label">Sq Ft</span><span class="value">12,000</span></div>
             <div><span class="label">Rent</span><span class="value">$18,000/mo</span></div>
@@ -71,9 +90,10 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
         <div class="weak">Weak: cost</div>
     </div>
 <div class="card go">
-        <div class="rank">#3</div>
+        <div class="rank">#4</div>
         <h3>Downtown Plaza</h3>
         <p class="address">100 Main St</p>
+        
         <div class="stats">
             <div><span class="label">Sq Ft</span><span class="value">15,000</span></div>
             <div><span class="label">Rent</span><span class="value">$25,000/mo</span></div>
@@ -85,9 +105,10 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
         <div class="weak">Weak: cost</div>
     </div>
 <div class="card go">
-        <div class="rank">#4</div>
+        <div class="rank">#5</div>
         <h3>Church Building</h3>
         <p class="address">50 Faith Ln</p>
+        
         <div class="stats">
             <div><span class="label">Sq Ft</span><span class="value">10,000</span></div>
             <div><span class="label">Rent</span><span class="value">$8,000/mo</span></div>
@@ -99,9 +120,10 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
         <div class="weak">Weak: outdoor</div>
     </div>
 <div class="card go">
-        <div class="rank">#5</div>
+        <div class="rank">#6</div>
         <h3>Suburban Strip</h3>
         <p class="address">500 Oak Ave</p>
+        
         <div class="stats">
             <div><span class="label">Sq Ft</span><span class="value">8,000</span></div>
             <div><span class="label">Rent</span><span class="value">$10,000/mo</span></div>
@@ -113,9 +135,10 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
         <div class="weak">Weak: kitchen, cost</div>
     </div>
 <div class="card go">
-        <div class="rank">#6</div>
+        <div class="rank">#7</div>
         <h3>Industrial Park</h3>
         <p class="address">999 Factory Rd</p>
+        
         <div class="stats">
             <div><span class="label">Sq Ft</span><span class="value">20,000</span></div>
             <div><span class="label">Rent</span><span class="value">$12,000/mo</span></div>
@@ -127,9 +150,10 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
         <div class="weak">Weak: driveway</div>
     </div>
 <div class="card nogo">
-        <div class="rank">#7</div>
+        <div class="rank">#8</div>
         <h3>Cramped Office</h3>
         <p class="address">10 Tiny Lane</p>
+        
         <div class="stats">
             <div><span class="label">Sq Ft</span><span class="value">3,000</span></div>
             <div><span class="label">Rent</span><span class="value">$5,000/mo</span></div>
@@ -140,5 +164,5 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
         <div class="decision">NO-GO</div>
         <div class="weak">Weak: driveway, outdoor, kitchen, zoning, cost</div>
     </div></div>
-<footer>Generated by Site Scorer • Viability threshold: 70/100</footer>
+<footer>Generated by Site Scorer • Demographics via US Census API</footer>
 </div></body></html>
