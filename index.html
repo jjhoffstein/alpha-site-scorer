@@ -24,6 +24,7 @@
 <div class="form-group checkbox-group"><input type="checkbox" id="edit-zoning"><label>Zoning Clear</label></div>
 <div class="btn-row"><button class="btn btn-primary" onclick="saveSite()">Save</button><button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="deleteSite()">Delete</button></div>
 </div></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 let sites=[{"name": "NYC Financial District", "address": "180 Maiden Lane", "sqft": 18000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 85000, "parking_spots": 0, "zoning_clear": true, "zip_code": "10038"}, {"name": "Miami Tropical Park", "address": "8000 SW 56th St", "sqft": 15000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 28000, "parking_spots": 0, "zoning_clear": true, "zip_code": "33155"}, {"name": "Scottsdale", "address": "7001 N Scottsdale Rd", "sqft": 12000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 22000, "parking_spots": 0, "zoning_clear": true, "zip_code": "85253"}, {"name": "San Francisco SOMA", "address": "500 Folsom St", "sqft": 14000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": false, "monthly_rent": 65000, "parking_spots": 0, "zoning_clear": true, "zip_code": "94105"}, {"name": "Brownsville TX", "address": "1200 E Price Rd", "sqft": 16000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 12000, "parking_spots": 0, "zoning_clear": true, "zip_code": "78521"}, {"name": "Palm Beach", "address": "300 S County Rd", "sqft": 11000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 35000, "parking_spots": 0, "zoning_clear": true, "zip_code": "33480"}, {"name": "Raleigh NC", "address": "4601 Six Forks Rd", "sqft": 13000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 18000, "parking_spots": 0, "zoning_clear": true, "zip_code": "27609"}, {"name": "Orlando", "address": "7600 Dr Phillips Blvd", "sqft": 14000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 20000, "parking_spots": 0, "zoning_clear": true, "zip_code": "32819"}, {"name": "Charlotte", "address": "4400 Sharon Rd", "sqft": 12500, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 19000, "parking_spots": 0, "zoning_clear": true, "zip_code": "28211"}, {"name": "Denver", "address": "1600 Glenarm Pl", "sqft": 11000, "has_driveway": false, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 24000, "parking_spots": 0, "zoning_clear": true, "zip_code": "80202"}, {"name": "Detroit Warehouse", "address": "5000 Michigan Ave", "sqft": 25000, "has_driveway": false, "has_outdoor_space": false, "has_kitchen_area": false, "monthly_rent": 8000, "parking_spots": 0, "zoning_clear": true, "zip_code": "48210"}, {"name": "Rural Kansas", "address": "100 Main St", "sqft": 4000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": false, "monthly_rent": 2000, "parking_spots": 0, "zoning_clear": true, "zip_code": "67401"}, {"name": "Houston Galleria", "address": "5000 Westheimer Rd", "sqft": 16000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 26000, "parking_spots": 0, "zoning_clear": true, "zip_code": "77056"}, {"name": "Dallas Uptown", "address": "2500 McKinney Ave", "sqft": 13000, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 21000, "parking_spots": 0, "zoning_clear": true, "zip_code": "75201"}, {"name": "Austin Mueller", "address": "1900 Aldrich St", "sqft": 14500, "has_driveway": true, "has_outdoor_space": true, "has_kitchen_area": true, "monthly_rent": 19000, "parking_spots": 0, "zoning_clear": true, "zip_code": "78723"}];const stored=localStorage.getItem('alpha-sites');if(stored)sites=JSON.parse(stored);let editingIndex=-1;
@@ -53,24 +54,31 @@ function initMap(){if(map)return;map=L.map('map').setView([39,-98],4);L.tileLaye
 function updateMarkers(){markers.forEach(m=>map.removeLayer(m));markers=[];let tierColor={GREEN:'#16a34a',YELLOW:'#ca8a04',RED:'#dc2626'};sites.forEach((s,i)=>{let coords=zipCoords[s.zip_code];if(!coords)return;let score=scoreSite(s);let c=costAnalysis(s);let m=L.circleMarker(coords,{radius:12,fillColor:tierColor[score.tier],color:'white',weight:2,fillOpacity:0.9}).addTo(map);m.bindPopup(`<b>${s.name}</b><br>${s.address}<br><b>Score:</b> ${score.total.toFixed(1)}/100 (${score.tier})<br><b>Break-even:</b> ${c.breakEven} students<br><b>Margin:</b> ${c.margin>0?'$'+c.margin.toLocaleString():'—'}<br><button onclick="document.getElementById('btn-grid').click();setTimeout(()=>document.querySelector('[data-idx=\\''+i+'\\']')?.scrollIntoView({behavior:'smooth'}),100)" style="margin-top:8px;padding:4px 8px;cursor:pointer">View Card →</button>`);m.on('mouseover',function(){this.openPopup();});markers.push(m);});}
 function showView(v){document.getElementById('map').style.display=v==='map'?'block':'none';document.getElementById('grid').style.display=v==='grid'?'grid':'none';document.getElementById('btn-grid').classList.toggle('active',v==='grid');document.getElementById('btn-map').classList.toggle('active',v==='map');if(v==='map'){initMap();updateMarkers();setTimeout(()=>map.invalidateSize(),100);}}
 
+let costChart=null;
 function showCostDetail(i){
   let s=sites[i],c=costAnalysis(s);
-  document.getElementById('cost-breakdown').innerHTML=`
-    <dt>Annual Rent</dt><dd>$${c.rent.toLocaleString()}</dd>
-    <dt>Guides (${c.guides} × $110k)</dt><dd>$${c.guideSalary.toLocaleString()}</dd>
-    <dt>Head of School</dt><dd>${c.headOfSchool?'$'+c.headOfSchool.toLocaleString():'N/A (< 2 guides)'}</dd>
-    <dt>Utilities ($3/sqft)</dt><dd>$${c.utilities.toLocaleString()}</dd>
-    <dt>Insurance</dt><dd>$${c.insurance.toLocaleString()}</dd>
-    <dt>Marketing</dt><dd>$${c.marketing.toLocaleString()}</dd>
-    <dt>Food Service ($1,500/student)</dt><dd>$${c.food.toLocaleString()}</dd>
-    <dt class="total">Total Annual Cost</dt><dd class="total">$${c.totalCost.toLocaleString()}</dd>
-    <dt>Tuition per Student</dt><dd>$${c.tuition.toLocaleString()}</dd>
-    <dt>Break-even Students</dt><dd>${c.breakEven}</dd>
-    <dt>Max Capacity</dt><dd>${c.capacity}</dd>
-    <dt>Potential Margin</dt><dd>${c.margin>0?'$'+c.margin.toLocaleString():'—'}</dd>
-  `;
+  document.getElementById('cost-site-name').textContent=s.name+' — Cost Breakdown';
+  document.getElementById('cost-total').textContent='$'+c.totalCost.toLocaleString();
+  document.getElementById('cost-breakeven').textContent=c.breakEven+' students';
+  document.getElementById('cost-capacity').textContent=c.capacity+' students';
+  let marginEl=document.getElementById('cost-margin');
+  if(c.margin>0){marginEl.style.background='#dcfce7';marginEl.innerHTML='<div style="font-size:1.25rem;font-weight:600;color:#16a34a">$'+c.margin.toLocaleString()+'</div><div style="font-size:0.75rem;color:#64748b">Potential Annual Margin at Capacity</div>';}
+  else{marginEl.style.background='#fef9c3';marginEl.innerHTML='<div style="font-size:1rem;font-weight:600;color:#ca8a04">Break-even exceeds capacity</div><div style="font-size:0.75rem;color:#64748b">Consider negotiating rent or increasing tuition</div>';}
+  document.getElementById('cost-details').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px">
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #3b82f6"><div style="font-weight:600">Rent — $${c.rent.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">$${s.monthly_rent.toLocaleString()}/mo × 12 months. Largest fixed cost; negotiate aggressively.</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #8b5cf6"><div style="font-weight:600">Guide Salaries — $${c.guideSalary.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">${c.guides} guide${c.guides>1?'s':''} × $110k. One guide per ~5,000 sqft for optimal coverage.</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #ec4899"><div style="font-weight:600">Head of School — ${c.headOfSchool?'$'+c.headOfSchool.toLocaleString():'N/A'}</div><div style="font-size:0.8rem;color:#64748b">${c.headOfSchool?'Required when campus has 2+ guides for coordination.':'Not needed until campus scales to 2+ guides.'}</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #f97316"><div style="font-weight:600">Utilities — $${c.utilities.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">Estimated at $3/sqft annually. Includes electric, water, internet.</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #14b8a6"><div style="font-weight:600">Insurance — $${c.insurance.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">General liability + property insurance. May vary by location.</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #eab308"><div style="font-weight:600">Marketing — $${c.marketing.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">Grassroots outreach, events, digital ads for enrollment drives.</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #22c55e"><div style="font-weight:600">Food Service — $${c.food.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">${c.capacity} students × $1,500/year. Catering program (e.g., Sifted).</div></div>
+    </div>`;
+  if(costChart){costChart.destroy();}
+  costChart=new Chart(document.getElementById('costChart'),{type:'doughnut',data:{labels:['Rent','Guides','Head of School','Utilities','Insurance','Marketing','Food'],datasets:[{data:[c.rent,c.guideSalary,c.headOfSchool,c.utilities,c.insurance,c.marketing,c.food],backgroundColor:['#3b82f6','#8b5cf6','#ec4899','#f97316','#14b8a6','#eab308','#22c55e']}]},options:{plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:8,font:{size:11}}}}}});
   document.getElementById('costModal').classList.add('active');
 }
+function closeCostModal(){document.getElementById('costModal').classList.remove('active');}
 render();}
 function deleteSite(){if(confirm('Delete?')){sites.splice(editingIndex,1);localStorage.setItem('alpha-sites',JSON.stringify(sites));closeModal();
 const zipCoords={"28211": [35.15, -80.82], "78723": [30.3, -97.69], "27609": [35.84, -78.63], "32819": [28.45, -81.49], "77056": [29.74, -95.46], "78521": [25.93, -97.48], "33155": [25.73, -80.31], "75201": [32.79, -96.8], "85253": [33.56, -111.89], "10038": [40.71, -74.0], "33480": [26.7, -80.04], "67401": [38.84, -97.61], "80202": [39.75, -104.99], "94105": [37.79, -122.39], "48210": [42.33, -83.11]};let map,markers=[];
@@ -78,24 +86,31 @@ function initMap(){if(map)return;map=L.map('map').setView([39,-98],4);L.tileLaye
 function updateMarkers(){markers.forEach(m=>map.removeLayer(m));markers=[];let tierColor={GREEN:'#16a34a',YELLOW:'#ca8a04',RED:'#dc2626'};sites.forEach((s,i)=>{let coords=zipCoords[s.zip_code];if(!coords)return;let score=scoreSite(s);let c=costAnalysis(s);let m=L.circleMarker(coords,{radius:12,fillColor:tierColor[score.tier],color:'white',weight:2,fillOpacity:0.9}).addTo(map);m.bindPopup(`<b>${s.name}</b><br>${s.address}<br><b>Score:</b> ${score.total.toFixed(1)}/100 (${score.tier})<br><b>Break-even:</b> ${c.breakEven} students<br><b>Margin:</b> ${c.margin>0?'$'+c.margin.toLocaleString():'—'}<br><button onclick="document.getElementById('btn-grid').click();setTimeout(()=>document.querySelector('[data-idx=\\''+i+'\\']')?.scrollIntoView({behavior:'smooth'}),100)" style="margin-top:8px;padding:4px 8px;cursor:pointer">View Card →</button>`);m.on('mouseover',function(){this.openPopup();});markers.push(m);});}
 function showView(v){document.getElementById('map').style.display=v==='map'?'block':'none';document.getElementById('grid').style.display=v==='grid'?'grid':'none';document.getElementById('btn-grid').classList.toggle('active',v==='grid');document.getElementById('btn-map').classList.toggle('active',v==='map');if(v==='map'){initMap();updateMarkers();setTimeout(()=>map.invalidateSize(),100);}}
 
+let costChart=null;
 function showCostDetail(i){
   let s=sites[i],c=costAnalysis(s);
-  document.getElementById('cost-breakdown').innerHTML=`
-    <dt>Annual Rent</dt><dd>$${c.rent.toLocaleString()}</dd>
-    <dt>Guides (${c.guides} × $110k)</dt><dd>$${c.guideSalary.toLocaleString()}</dd>
-    <dt>Head of School</dt><dd>${c.headOfSchool?'$'+c.headOfSchool.toLocaleString():'N/A (< 2 guides)'}</dd>
-    <dt>Utilities ($3/sqft)</dt><dd>$${c.utilities.toLocaleString()}</dd>
-    <dt>Insurance</dt><dd>$${c.insurance.toLocaleString()}</dd>
-    <dt>Marketing</dt><dd>$${c.marketing.toLocaleString()}</dd>
-    <dt>Food Service ($1,500/student)</dt><dd>$${c.food.toLocaleString()}</dd>
-    <dt class="total">Total Annual Cost</dt><dd class="total">$${c.totalCost.toLocaleString()}</dd>
-    <dt>Tuition per Student</dt><dd>$${c.tuition.toLocaleString()}</dd>
-    <dt>Break-even Students</dt><dd>${c.breakEven}</dd>
-    <dt>Max Capacity</dt><dd>${c.capacity}</dd>
-    <dt>Potential Margin</dt><dd>${c.margin>0?'$'+c.margin.toLocaleString():'—'}</dd>
-  `;
+  document.getElementById('cost-site-name').textContent=s.name+' — Cost Breakdown';
+  document.getElementById('cost-total').textContent='$'+c.totalCost.toLocaleString();
+  document.getElementById('cost-breakeven').textContent=c.breakEven+' students';
+  document.getElementById('cost-capacity').textContent=c.capacity+' students';
+  let marginEl=document.getElementById('cost-margin');
+  if(c.margin>0){marginEl.style.background='#dcfce7';marginEl.innerHTML='<div style="font-size:1.25rem;font-weight:600;color:#16a34a">$'+c.margin.toLocaleString()+'</div><div style="font-size:0.75rem;color:#64748b">Potential Annual Margin at Capacity</div>';}
+  else{marginEl.style.background='#fef9c3';marginEl.innerHTML='<div style="font-size:1rem;font-weight:600;color:#ca8a04">Break-even exceeds capacity</div><div style="font-size:0.75rem;color:#64748b">Consider negotiating rent or increasing tuition</div>';}
+  document.getElementById('cost-details').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px">
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #3b82f6"><div style="font-weight:600">Rent — $${c.rent.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">$${s.monthly_rent.toLocaleString()}/mo × 12 months. Largest fixed cost; negotiate aggressively.</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #8b5cf6"><div style="font-weight:600">Guide Salaries — $${c.guideSalary.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">${c.guides} guide${c.guides>1?'s':''} × $110k. One guide per ~5,000 sqft for optimal coverage.</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #ec4899"><div style="font-weight:600">Head of School — ${c.headOfSchool?'$'+c.headOfSchool.toLocaleString():'N/A'}</div><div style="font-size:0.8rem;color:#64748b">${c.headOfSchool?'Required when campus has 2+ guides for coordination.':'Not needed until campus scales to 2+ guides.'}</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #f97316"><div style="font-weight:600">Utilities — $${c.utilities.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">Estimated at $3/sqft annually. Includes electric, water, internet.</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #14b8a6"><div style="font-weight:600">Insurance — $${c.insurance.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">General liability + property insurance. May vary by location.</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #eab308"><div style="font-weight:600">Marketing — $${c.marketing.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">Grassroots outreach, events, digital ads for enrollment drives.</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #22c55e"><div style="font-weight:600">Food Service — $${c.food.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">${c.capacity} students × $1,500/year. Catering program (e.g., Sifted).</div></div>
+    </div>`;
+  if(costChart){costChart.destroy();}
+  costChart=new Chart(document.getElementById('costChart'),{type:'doughnut',data:{labels:['Rent','Guides','Head of School','Utilities','Insurance','Marketing','Food'],datasets:[{data:[c.rent,c.guideSalary,c.headOfSchool,c.utilities,c.insurance,c.marketing,c.food],backgroundColor:['#3b82f6','#8b5cf6','#ec4899','#f97316','#14b8a6','#eab308','#22c55e']}]},options:{plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:8,font:{size:11}}}}}});
   document.getElementById('costModal').classList.add('active');
 }
+function closeCostModal(){document.getElementById('costModal').classList.remove('active');}
 render();}}
 
 const zipCoords={"28211": [35.15, -80.82], "78723": [30.3, -97.69], "27609": [35.84, -78.63], "32819": [28.45, -81.49], "77056": [29.74, -95.46], "78521": [25.93, -97.48], "33155": [25.73, -80.31], "75201": [32.79, -96.8], "85253": [33.56, -111.89], "10038": [40.71, -74.0], "33480": [26.7, -80.04], "67401": [38.84, -97.61], "80202": [39.75, -104.99], "94105": [37.79, -122.39], "48210": [42.33, -83.11]};let map,markers=[];
@@ -103,27 +118,46 @@ function initMap(){if(map)return;map=L.map('map').setView([39,-98],4);L.tileLaye
 function updateMarkers(){markers.forEach(m=>map.removeLayer(m));markers=[];let tierColor={GREEN:'#16a34a',YELLOW:'#ca8a04',RED:'#dc2626'};sites.forEach((s,i)=>{let coords=zipCoords[s.zip_code];if(!coords)return;let score=scoreSite(s);let c=costAnalysis(s);let m=L.circleMarker(coords,{radius:12,fillColor:tierColor[score.tier],color:'white',weight:2,fillOpacity:0.9}).addTo(map);m.bindPopup(`<b>${s.name}</b><br>${s.address}<br><b>Score:</b> ${score.total.toFixed(1)}/100 (${score.tier})<br><b>Break-even:</b> ${c.breakEven} students<br><b>Margin:</b> ${c.margin>0?'$'+c.margin.toLocaleString():'—'}<br><button onclick="document.getElementById('btn-grid').click();setTimeout(()=>document.querySelector('[data-idx=\\''+i+'\\']')?.scrollIntoView({behavior:'smooth'}),100)" style="margin-top:8px;padding:4px 8px;cursor:pointer">View Card →</button>`);m.on('mouseover',function(){this.openPopup();});markers.push(m);});}
 function showView(v){document.getElementById('map').style.display=v==='map'?'block':'none';document.getElementById('grid').style.display=v==='grid'?'grid':'none';document.getElementById('btn-grid').classList.toggle('active',v==='grid');document.getElementById('btn-map').classList.toggle('active',v==='map');if(v==='map'){initMap();updateMarkers();setTimeout(()=>map.invalidateSize(),100);}}
 
+let costChart=null;
 function showCostDetail(i){
   let s=sites[i],c=costAnalysis(s);
-  document.getElementById('cost-breakdown').innerHTML=`
-    <dt>Annual Rent</dt><dd>$${c.rent.toLocaleString()}</dd>
-    <dt>Guides (${c.guides} × $110k)</dt><dd>$${c.guideSalary.toLocaleString()}</dd>
-    <dt>Head of School</dt><dd>${c.headOfSchool?'$'+c.headOfSchool.toLocaleString():'N/A (< 2 guides)'}</dd>
-    <dt>Utilities ($3/sqft)</dt><dd>$${c.utilities.toLocaleString()}</dd>
-    <dt>Insurance</dt><dd>$${c.insurance.toLocaleString()}</dd>
-    <dt>Marketing</dt><dd>$${c.marketing.toLocaleString()}</dd>
-    <dt>Food Service ($1,500/student)</dt><dd>$${c.food.toLocaleString()}</dd>
-    <dt class="total">Total Annual Cost</dt><dd class="total">$${c.totalCost.toLocaleString()}</dd>
-    <dt>Tuition per Student</dt><dd>$${c.tuition.toLocaleString()}</dd>
-    <dt>Break-even Students</dt><dd>${c.breakEven}</dd>
-    <dt>Max Capacity</dt><dd>${c.capacity}</dd>
-    <dt>Potential Margin</dt><dd>${c.margin>0?'$'+c.margin.toLocaleString():'—'}</dd>
-  `;
+  document.getElementById('cost-site-name').textContent=s.name+' — Cost Breakdown';
+  document.getElementById('cost-total').textContent='$'+c.totalCost.toLocaleString();
+  document.getElementById('cost-breakeven').textContent=c.breakEven+' students';
+  document.getElementById('cost-capacity').textContent=c.capacity+' students';
+  let marginEl=document.getElementById('cost-margin');
+  if(c.margin>0){marginEl.style.background='#dcfce7';marginEl.innerHTML='<div style="font-size:1.25rem;font-weight:600;color:#16a34a">$'+c.margin.toLocaleString()+'</div><div style="font-size:0.75rem;color:#64748b">Potential Annual Margin at Capacity</div>';}
+  else{marginEl.style.background='#fef9c3';marginEl.innerHTML='<div style="font-size:1rem;font-weight:600;color:#ca8a04">Break-even exceeds capacity</div><div style="font-size:0.75rem;color:#64748b">Consider negotiating rent or increasing tuition</div>';}
+  document.getElementById('cost-details').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px">
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #3b82f6"><div style="font-weight:600">Rent — $${c.rent.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">$${s.monthly_rent.toLocaleString()}/mo × 12 months. Largest fixed cost; negotiate aggressively.</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #8b5cf6"><div style="font-weight:600">Guide Salaries — $${c.guideSalary.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">${c.guides} guide${c.guides>1?'s':''} × $110k. One guide per ~5,000 sqft for optimal coverage.</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #ec4899"><div style="font-weight:600">Head of School — ${c.headOfSchool?'$'+c.headOfSchool.toLocaleString():'N/A'}</div><div style="font-size:0.8rem;color:#64748b">${c.headOfSchool?'Required when campus has 2+ guides for coordination.':'Not needed until campus scales to 2+ guides.'}</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #f97316"><div style="font-weight:600">Utilities — $${c.utilities.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">Estimated at $3/sqft annually. Includes electric, water, internet.</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #14b8a6"><div style="font-weight:600">Insurance — $${c.insurance.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">General liability + property insurance. May vary by location.</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #eab308"><div style="font-weight:600">Marketing — $${c.marketing.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">Grassroots outreach, events, digital ads for enrollment drives.</div></div>
+      <div style="padding:12px;background:#f8fafc;border-radius:8px;border-left:3px solid #22c55e"><div style="font-weight:600">Food Service — $${c.food.toLocaleString()}</div><div style="font-size:0.8rem;color:#64748b">${c.capacity} students × $1,500/year. Catering program (e.g., Sifted).</div></div>
+    </div>`;
+  if(costChart){costChart.destroy();}
+  costChart=new Chart(document.getElementById('costChart'),{type:'doughnut',data:{labels:['Rent','Guides','Head of School','Utilities','Insurance','Marketing','Food'],datasets:[{data:[c.rent,c.guideSalary,c.headOfSchool,c.utilities,c.insurance,c.marketing,c.food],backgroundColor:['#3b82f6','#8b5cf6','#ec4899','#f97316','#14b8a6','#eab308','#22c55e']}]},options:{plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:8,font:{size:11}}}}}});
   document.getElementById('costModal').classList.add('active');
 }
+function closeCostModal(){document.getElementById('costModal').classList.remove('active');}
 render();
-</script><div class="modal" id="costModal"><div class="modal-content">
-<h2>Cost Breakdown</h2>
-<dl class="breakdown" id="cost-breakdown"></dl>
-<div class="btn-row"><button class="btn btn-secondary" onclick="document.getElementById('costModal').classList.remove('active')">Close</button></div>
+</script><div class="modal" id="costModal"><div class="modal-content" style="max-width:600px">
+<h2 id="cost-site-name">Cost Breakdown</h2>
+<div style="display:flex;gap:24px;flex-wrap:wrap">
+<div style="flex:1;min-width:200px"><canvas id="costChart" height="200"></canvas></div>
+<div style="flex:1;min-width:200px">
+<div style="font-size:1.5rem;font-weight:700;color:#0f172a" id="cost-total"></div>
+<div style="color:#64748b;margin-bottom:16px">Annual Operating Cost</div>
+<div style="display:flex;gap:16px;margin-bottom:16px">
+<div style="text-align:center;padding:12px;background:#dcfce7;border-radius:8px;flex:1"><div style="font-size:1.25rem;font-weight:600;color:#16a34a" id="cost-breakeven"></div><div style="font-size:0.75rem;color:#64748b">Break-even</div></div>
+<div style="text-align:center;padding:12px;background:#f1f5f9;border-radius:8px;flex:1"><div style="font-size:1.25rem;font-weight:600" id="cost-capacity"></div><div style="font-size:0.75rem;color:#64748b">Capacity</div></div>
+</div>
+<div id="cost-margin" style="padding:12px;border-radius:8px;text-align:center;margin-bottom:16px"></div>
+</div>
+</div>
+<div id="cost-details" style="margin-top:16px;border-top:1px solid #e2e8f0;padding-top:16px"></div>
+<div class="btn-row"><button class="btn btn-secondary" onclick="closeCostModal()">Close</button></div>
 </div></div></body></html>
