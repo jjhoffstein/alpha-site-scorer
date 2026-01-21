@@ -1,5 +1,10 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Alpha School Site Pipeline</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Alpha Site Pipeline Dashboard</title>
+<meta name="description" content="AI-powered site viability scoring for school expansion - 15 sites evaluated">
+<meta property="og:title" content="Alpha Site Pipeline Dashboard">
+<meta property="og:description" content="13 sites recommended, 2 need review, 0 not viable">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -8,62 +13,65 @@ body{font-family:'Inter',system-ui,sans-serif;background:#f8fafc;color:#1e293b;l
 header{text-align:center;margin-bottom:40px}
 h1{font-size:2.5rem;font-weight:700;color:#0f172a;margin-bottom:8px}
 .subtitle{color:#64748b;font-size:1.1rem}
-.summary{display:flex;gap:20px;justify-content:center;margin:30px 0;flex-wrap:wrap}
-.stat-box{background:white;padding:20px 40px;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
-.stat-box .num{font-size:2rem;font-weight:700}
-.stat-box .lbl{color:#64748b;font-size:0.9rem}
-.stat-box.go .num{color:#16a34a}
-.stat-box.nogo .num{color:#dc2626}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
-.card{background:white;border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.1);position:relative;border-left:4px solid #e2e8f0}
+.summary{display:flex;gap:16px;justify-content:center;margin:30px 0;flex-wrap:wrap}
+.stat-box{background:white;padding:16px 32px;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.1);min-width:120px}
+.stat-box .num{font-size:1.75rem;font-weight:700}
+.stat-box .lbl{color:#64748b;font-size:0.85rem}
+.stat-box.green .num{color:#16a34a}
+.stat-box.yellow .num{color:#ca8a04}
+.stat-box.red .num{color:#dc2626}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.card{background:white;border-radius:16px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.1);position:relative;border-left:4px solid #e2e8f0}
 .card.go{border-left-color:#16a34a}
+.card.caution{border-left-color:#ca8a04}
 .card.nogo{border-left-color:#dc2626}
-.rank{position:absolute;top:16px;right:16px;background:#f1f5f9;color:#64748b;padding:4px 10px;border-radius:20px;font-size:0.8rem;font-weight:600}
-h3{font-size:1.25rem;font-weight:600;margin-bottom:4px}
-.address{color:#64748b;font-size:0.9rem;margin-bottom:8px}
-.demo{display:flex;gap:12px;margin-bottom:8px;font-size:0.85rem;color:#6366f1}
-.demo span{background:#eef2ff;padding:2px 8px;border-radius:4px}
-.cost{display:flex;gap:12px;margin-bottom:12px;font-size:0.85rem;color:#059669}
-.cost span{background:#ecfdf5;padding:2px 8px;border-radius:4px}
-.stats{display:flex;gap:16px;margin-bottom:16px}
-.stats div{flex:1}
-.label{display:block;color:#94a3b8;font-size:0.75rem;text-transform:uppercase}
-.value{font-weight:600}
+.rank{position:absolute;top:12px;right:12px;background:#f1f5f9;color:#64748b;padding:4px 10px;border-radius:20px;font-size:0.75rem;font-weight:600}
+h3{font-size:1.1rem;font-weight:600;margin-bottom:4px;padding-right:50px}
+.address{color:#64748b;font-size:0.85rem;margin-bottom:8px}
+.demo,.cost{display:flex;gap:8px;margin-bottom:8px;font-size:0.8rem;flex-wrap:wrap}
+.demo span{background:#eef2ff;color:#6366f1;padding:2px 8px;border-radius:4px}
+.cost span{background:#ecfdf5;color:#059669;padding:2px 8px;border-radius:4px}
+.stats{display:flex;gap:12px;margin-bottom:12px}
+.stats div{flex:1;min-width:0}
+.label{display:block;color:#94a3b8;font-size:0.7rem;text-transform:uppercase}
+.value{font-weight:600;font-size:0.9rem}
 .score-bar{background:#e2e8f0;height:8px;border-radius:4px;overflow:hidden;margin-bottom:8px}
-.fill{height:100%;background:linear-gradient(90deg,#16a34a,#22c55e);border-radius:4px}
+.fill{height:100%;background:linear-gradient(90deg,#16a34a,#22c55e);border-radius:4px;transition:width 0.3s}
+.card.caution .fill{background:linear-gradient(90deg,#ca8a04,#eab308)}
 .card.nogo .fill{background:linear-gradient(90deg,#dc2626,#ef4444)}
-.score{font-size:1.5rem;font-weight:700}.score span{color:#94a3b8;font-size:1rem}
-.decision{display:inline-block;padding:4px 12px;border-radius:20px;font-size:0.8rem;font-weight:600;margin:8px 0}
+.score{font-size:1.4rem;font-weight:700}.score span{color:#94a3b8;font-size:0.9rem}
+.decision{display:inline-block;padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:600;margin:8px 0}
 .card.go .decision{background:#dcfce7;color:#16a34a}
+.card.caution .decision{background:#fef9c3;color:#ca8a04}
 .card.nogo .decision{background:#fee2e2;color:#dc2626}
-.weak{color:#64748b;font-size:0.85rem}
-footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
+.weak{color:#64748b;font-size:0.8rem}
+footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.8rem}
+@media(max-width:640px){
+  h1{font-size:1.75rem}
+  .summary{gap:10px}
+  .stat-box{padding:12px 20px;min-width:100px}
+  .stat-box .num{font-size:1.5rem}
+  .grid{grid-template-columns:1fr}
+  .stats{flex-wrap:wrap}
+  .stats div{min-width:30%}
+}
+@media print{
+  body{background:white}
+  .card{box-shadow:none;border:1px solid #e2e8f0;break-inside:avoid}
+  .score-bar{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+}
 </style></head>
 <body><div class="container">
 <header><h1>🏫 Alpha Site Pipeline</h1><p class="subtitle">AI-Powered Site Viability Scoring System</p></header>
-<div class="summary">
+<main>
+<div class="summary" role="status" aria-label="Pipeline summary">
 <div class="stat-box"><div class="num">15</div><div class="lbl">Sites Evaluated</div></div>
-<div class="stat-box go"><div class="num">14</div><div class="lbl">Recommended</div></div>
-<div class="stat-box nogo"><div class="num">1</div><div class="lbl">Not Viable</div></div>
+<div class="stat-box green"><div class="num">13</div><div class="lbl">✅ Green (75+)</div></div>
+<div class="stat-box yellow"><div class="num">2</div><div class="lbl">⚠️ Yellow (50-74)</div></div>
+<div class="stat-box red"><div class="num">0</div><div class="lbl">❌ Red (&lt;50)</div></div>
 </div>
-<div class="grid"><div class="card go">
+<div class="grid"><article class="card go">
         <div class="rank">#1</div>
-        <h3>Austin Mueller</h3>
-        <p class="address">1900 Aldrich St (78723)</p>
-        <div class="demo"><span>Pop: 36,114</span><span>Income: $76,535</span></div>
-        <div class="stats">
-            <div><span class="label">Sq Ft</span><span class="value">14,500</span></div>
-            <div><span class="label">Rent</span><span class="value">$19,000/mo</span></div>
-            <div><span class="label">$/sqft</span><span class="value">$1.31</span></div>
-        </div>
-        <div class="cost"><span>Break-even: 30 students</span><span>Capacity: 290</span></div>
-        <div class="score-bar"><div class="fill" style="width:100%"></div></div>
-        <div class="score">118.0<span>/100</span></div>
-        <div class="decision">GO</div>
-        <div class="weak">Weak: cost</div>
-    </div>
-<div class="card go">
-        <div class="rank">#2</div>
         <h3>Charlotte</h3>
         <p class="address">4400 Sharon Rd (28211)</p>
         <div class="demo"><span>Pop: 31,581</span><span>Income: $101,827</span></div>
@@ -73,29 +81,29 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
             <div><span class="label">$/sqft</span><span class="value">$1.52</span></div>
         </div>
         <div class="cost"><span>Break-even: 30 students</span><span>Capacity: 250</span></div>
-        <div class="score-bar"><div class="fill" style="width:100%"></div></div>
-        <div class="score">117.4<span>/100</span></div>
-        <div class="decision">GO</div>
-        <div class="weak">Weak: cost</div>
-    </div>
-<div class="card go">
-        <div class="rank">#3</div>
-        <h3>Orlando</h3>
-        <p class="address">7600 Dr Phillips Blvd (32819)</p>
-        <div class="demo"><span>Pop: 28,765</span><span>Income: $76,218</span></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="98" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:97.92%"></div></div>
+        <div class="score">97.9<span>/100</span></div>
+        <div class="decision">✅ GREEN</div>
+        <div class="weak">✓ No weak areas</div>
+    </article>
+<article class="card go">
+        <div class="rank">#2</div>
+        <h3>Austin Mueller</h3>
+        <p class="address">1900 Aldrich St (78723)</p>
+        <div class="demo"><span>Pop: 36,114</span><span>Income: $76,535</span></div>
         <div class="stats">
-            <div><span class="label">Sq Ft</span><span class="value">14,000</span></div>
-            <div><span class="label">Rent</span><span class="value">$20,000/mo</span></div>
-            <div><span class="label">$/sqft</span><span class="value">$1.43</span></div>
+            <div><span class="label">Sq Ft</span><span class="value">14,500</span></div>
+            <div><span class="label">Rent</span><span class="value">$19,000/mo</span></div>
+            <div><span class="label">$/sqft</span><span class="value">$1.31</span></div>
         </div>
-        <div class="cost"><span>Break-even: 31 students</span><span>Capacity: 280</span></div>
-        <div class="score-bar"><div class="fill" style="width:100%"></div></div>
-        <div class="score">117.4<span>/100</span></div>
-        <div class="decision">GO</div>
-        <div class="weak">Weak: cost</div>
-    </div>
-<div class="card go">
-        <div class="rank">#4</div>
+        <div class="cost"><span>Break-even: 30 students</span><span>Capacity: 290</span></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="96" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:96.41212068965517%"></div></div>
+        <div class="score">96.4<span>/100</span></div>
+        <div class="decision">✅ GREEN</div>
+        <div class="weak">✓ No weak areas</div>
+    </article>
+<article class="card go">
+        <div class="rank">#3</div>
         <h3>Raleigh NC</h3>
         <p class="address">4601 Six Forks Rd (27609)</p>
         <div class="demo"><span>Pop: 35,377</span><span>Income: $73,979</span></div>
@@ -105,12 +113,28 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
             <div><span class="label">$/sqft</span><span class="value">$1.38</span></div>
         </div>
         <div class="cost"><span>Break-even: 30 students</span><span>Capacity: 260</span></div>
-        <div class="score-bar"><div class="fill" style="width:100%"></div></div>
-        <div class="score">117.3<span>/100</span></div>
-        <div class="decision">GO</div>
-        <div class="weak">Weak: cost</div>
-    </div>
-<div class="card go">
+        <div class="score-bar" role="progressbar" aria-valuenow="96" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:95.85943846153846%"></div></div>
+        <div class="score">95.9<span>/100</span></div>
+        <div class="decision">✅ GREEN</div>
+        <div class="weak">✓ No weak areas</div>
+    </article>
+<article class="card go">
+        <div class="rank">#4</div>
+        <h3>Orlando</h3>
+        <p class="address">7600 Dr Phillips Blvd (32819)</p>
+        <div class="demo"><span>Pop: 28,765</span><span>Income: $76,218</span></div>
+        <div class="stats">
+            <div><span class="label">Sq Ft</span><span class="value">14,000</span></div>
+            <div><span class="label">Rent</span><span class="value">$20,000/mo</span></div>
+            <div><span class="label">$/sqft</span><span class="value">$1.43</span></div>
+        </div>
+        <div class="cost"><span>Break-even: 31 students</span><span>Capacity: 280</span></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:95.49584761904762%"></div></div>
+        <div class="score">95.5<span>/100</span></div>
+        <div class="decision">✅ GREEN</div>
+        <div class="weak">✓ No weak areas</div>
+    </article>
+<article class="card go">
         <div class="rank">#5</div>
         <h3>Houston Galleria</h3>
         <p class="address">5000 Westheimer Rd (77056)</p>
@@ -121,29 +145,13 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
             <div><span class="label">$/sqft</span><span class="value">$1.62</span></div>
         </div>
         <div class="cost"><span>Break-even: 43 students</span><span>Capacity: 320</span></div>
-        <div class="score-bar"><div class="fill" style="width:100%"></div></div>
-        <div class="score">116.9<span>/100</span></div>
-        <div class="decision">GO</div>
-        <div class="weak">Weak: cost</div>
-    </div>
-<div class="card go">
+        <div class="score-bar" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:94.854%"></div></div>
+        <div class="score">94.9<span>/100</span></div>
+        <div class="decision">✅ GREEN</div>
+        <div class="weak">✓ No weak areas</div>
+    </article>
+<article class="card go">
         <div class="rank">#6</div>
-        <h3>Dallas Uptown</h3>
-        <p class="address">2500 McKinney Ave (75201)</p>
-        <div class="demo"><span>Pop: 17,491</span><span>Income: $95,907</span></div>
-        <div class="stats">
-            <div><span class="label">Sq Ft</span><span class="value">13,000</span></div>
-            <div><span class="label">Rent</span><span class="value">$21,000/mo</span></div>
-            <div><span class="label">$/sqft</span><span class="value">$1.62</span></div>
-        </div>
-        <div class="cost"><span>Break-even: 32 students</span><span>Capacity: 260</span></div>
-        <div class="score-bar"><div class="fill" style="width:100%"></div></div>
-        <div class="score">115.7<span>/100</span></div>
-        <div class="decision">GO</div>
-        <div class="weak">Weak: cost</div>
-    </div>
-<div class="card go">
-        <div class="rank">#7</div>
         <h3>Brownsville TX</h3>
         <p class="address">1200 E Price Rd (78521)</p>
         <div class="demo"><span>Pop: 88,791</span><span>Income: $35,318</span></div>
@@ -153,13 +161,13 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
             <div><span class="label">$/sqft</span><span class="value">$0.75</span></div>
         </div>
         <div class="cost"><span>Break-even: 32 students</span><span>Capacity: 320</span></div>
-        <div class="score-bar"><div class="fill" style="width:100%"></div></div>
-        <div class="score">115.7<span>/100</span></div>
-        <div class="decision">GO</div>
-        <div class="weak">✓ No weak areas</div>
-    </div>
-<div class="card go">
-        <div class="rank">#8</div>
+        <div class="score-bar" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:94.5318%"></div></div>
+        <div class="score">94.5<span>/100</span></div>
+        <div class="decision">✅ GREEN</div>
+        <div class="weak">Weak: income</div>
+    </article>
+<article class="card go">
+        <div class="rank">#7</div>
         <h3>Miami Tropical Park</h3>
         <p class="address">8000 SW 56th St (33155)</p>
         <div class="demo"><span>Pop: 44,440</span><span>Income: $71,646</span></div>
@@ -169,12 +177,28 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
             <div><span class="label">$/sqft</span><span class="value">$1.87</span></div>
         </div>
         <div class="cost"><span>Break-even: 45 students</span><span>Capacity: 300</span></div>
-        <div class="score-bar"><div class="fill" style="width:100%"></div></div>
-        <div class="score">114.6<span>/100</span></div>
-        <div class="decision">GO</div>
+        <div class="score-bar" role="progressbar" aria-valuenow="94" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:93.69793333333334%"></div></div>
+        <div class="score">93.7<span>/100</span></div>
+        <div class="decision">✅ GREEN</div>
         <div class="weak">Weak: cost</div>
-    </div>
-<div class="card go">
+    </article>
+<article class="card go">
+        <div class="rank">#8</div>
+        <h3>Dallas Uptown</h3>
+        <p class="address">2500 McKinney Ave (75201)</p>
+        <div class="demo"><span>Pop: 17,491</span><span>Income: $95,907</span></div>
+        <div class="stats">
+            <div><span class="label">Sq Ft</span><span class="value">13,000</span></div>
+            <div><span class="label">Rent</span><span class="value">$21,000/mo</span></div>
+            <div><span class="label">$/sqft</span><span class="value">$1.62</span></div>
+        </div>
+        <div class="cost"><span>Break-even: 32 students</span><span>Capacity: 260</span></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="93" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:92.95949487179487%"></div></div>
+        <div class="score">93.0<span>/100</span></div>
+        <div class="decision">✅ GREEN</div>
+        <div class="weak">✓ No weak areas</div>
+    </article>
+<article class="card go">
         <div class="rank">#9</div>
         <h3>Scottsdale</h3>
         <p class="address">7001 N Scottsdale Rd (85253)</p>
@@ -185,12 +209,12 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
             <div><span class="label">$/sqft</span><span class="value">$1.83</span></div>
         </div>
         <div class="cost"><span>Break-even: 33 students</span><span>Capacity: 240</span></div>
-        <div class="score-bar"><div class="fill" style="width:100%"></div></div>
-        <div class="score">114.4<span>/100</span></div>
-        <div class="decision">GO</div>
+        <div class="score-bar" role="progressbar" aria-valuenow="92" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:92.404%"></div></div>
+        <div class="score">92.4<span>/100</span></div>
+        <div class="decision">✅ GREEN</div>
         <div class="weak">Weak: cost</div>
-    </div>
-<div class="card go">
+    </article>
+<article class="card go">
         <div class="rank">#10</div>
         <h3>NYC Financial District</h3>
         <p class="address">180 Maiden Lane (10038)</p>
@@ -201,12 +225,12 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
             <div><span class="label">$/sqft</span><span class="value">$4.72</span></div>
         </div>
         <div class="cost"><span>Break-even: 91 students</span><span>Capacity: 360</span></div>
-        <div class="score-bar"><div class="fill" style="width:100%"></div></div>
-        <div class="score">110.0<span>/100</span></div>
-        <div class="decision">GO</div>
+        <div class="score-bar" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:89.77773333333333%"></div></div>
+        <div class="score">89.8<span>/100</span></div>
+        <div class="decision">✅ GREEN</div>
         <div class="weak">Weak: cost</div>
-    </div>
-<div class="card go">
+    </article>
+<article class="card go">
         <div class="rank">#11</div>
         <h3>Palm Beach</h3>
         <p class="address">300 S County Rd (33480)</p>
@@ -217,12 +241,12 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
             <div><span class="label">$/sqft</span><span class="value">$3.18</span></div>
         </div>
         <div class="cost"><span>Break-even: 43 students</span><span>Capacity: 220</span></div>
-        <div class="score-bar"><div class="fill" style="width:100%"></div></div>
-        <div class="score">105.5<span>/100</span></div>
-        <div class="decision">GO</div>
-        <div class="weak">Weak: cost</div>
-    </div>
-<div class="card go">
+        <div class="score-bar" role="progressbar" aria-valuenow="86" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:85.68333333333334%"></div></div>
+        <div class="score">85.7<span>/100</span></div>
+        <div class="decision">✅ GREEN</div>
+        <div class="weak">Weak: cost, pop</div>
+    </article>
+<article class="card go">
         <div class="rank">#12</div>
         <h3>Rural Kansas</h3>
         <p class="address">100 Main St (67401)</p>
@@ -233,12 +257,12 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
             <div><span class="label">$/sqft</span><span class="value">$0.50</span></div>
         </div>
         <div class="cost"><span>Break-even: 2 students</span><span>Capacity: 80</span></div>
-        <div class="score-bar"><div class="fill" style="width:97.15551785714285%"></div></div>
-        <div class="score">97.2<span>/100</span></div>
-        <div class="decision">GO</div>
+        <div class="score-bar" role="progressbar" aria-valuenow="79" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:79.48631904761905%"></div></div>
+        <div class="score">79.5<span>/100</span></div>
+        <div class="decision">✅ GREEN</div>
         <div class="weak">Weak: kitchen</div>
-    </div>
-<div class="card go">
+    </article>
+<article class="card go">
         <div class="rank">#13</div>
         <h3>Denver</h3>
         <p class="address">1600 Glenarm Pl (80202)</p>
@@ -249,12 +273,12 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
             <div><span class="label">$/sqft</span><span class="value">$2.18</span></div>
         </div>
         <div class="cost"><span>Break-even: 34 students</span><span>Capacity: 220</span></div>
-        <div class="score-bar"><div class="fill" style="width:92.56690909090909%"></div></div>
-        <div class="score">92.6<span>/100</span></div>
-        <div class="decision">GO</div>
+        <div class="score-bar" role="progressbar" aria-valuenow="76" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:75.64639393939395%"></div></div>
+        <div class="score">75.6<span>/100</span></div>
+        <div class="decision">✅ GREEN</div>
         <div class="weak">Weak: driveway, cost</div>
-    </div>
-<div class="card go">
+    </article>
+<article class="card caution">
         <div class="rank">#14</div>
         <h3>San Francisco SOMA</h3>
         <p class="address">500 Folsom St (94105)</p>
@@ -265,12 +289,12 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
             <div><span class="label">$/sqft</span><span class="value">$4.64</span></div>
         </div>
         <div class="cost"><span>Break-even: 67 students</span><span>Capacity: 280</span></div>
-        <div class="score-bar"><div class="fill" style="width:91.905%"></div></div>
-        <div class="score">91.9<span>/100</span></div>
-        <div class="decision">GO</div>
-        <div class="weak">Weak: kitchen, cost</div>
-    </div>
-<div class="card nogo">
+        <div class="score-bar" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:74.60333333333334%"></div></div>
+        <div class="score">74.6<span>/100</span></div>
+        <div class="decision">⚠️ YELLOW</div>
+        <div class="weak">Weak: kitchen, cost, pop</div>
+    </article>
+<article class="card caution">
         <div class="rank">#15</div>
         <h3>Detroit Warehouse</h3>
         <p class="address">5000 Michigan Ave (48210)</p>
@@ -281,10 +305,11 @@ footer{text-align:center;margin-top:40px;color:#94a3b8;font-size:0.85rem}
             <div><span class="label">$/sqft</span><span class="value">$0.32</span></div>
         </div>
         <div class="cost"><span>Break-even: 44 students</span><span>Capacity: 500</span></div>
-        <div class="score-bar"><div class="fill" style="width:67.613875%"></div></div>
-        <div class="score">67.6<span>/100</span></div>
-        <div class="decision">NO-GO</div>
-        <div class="weak">Weak: driveway, outdoor, kitchen</div>
-    </div></div>
+        <div class="score-bar" role="progressbar" aria-valuenow="56" aria-valuemin="0" aria-valuemax="100"><div class="fill" style="width:56.13343333333333%"></div></div>
+        <div class="score">56.1<span>/100</span></div>
+        <div class="decision">⚠️ YELLOW</div>
+        <div class="weak">Weak: driveway, outdoor, kitchen, income</div>
+    </article></div>
+</main>
 <footer>Generated by Site Scorer • Demographics via US Census API • Break-even assumes $15k tuition</footer>
 </div></body></html>
