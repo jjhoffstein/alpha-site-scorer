@@ -205,6 +205,36 @@ function importSites(e){
   reader.readAsText(file);
   e.target.value='';
 }
+
+let draggedIdx=null;
+function renderKanban(){
+  let stages=['Sourced','Site Visit','LOI','Negotiation','Signed'];
+  let tierClass={GREEN:'go',YELLOW:'caution',RED:'nogo'};
+  document.getElementById('kanban').innerHTML=stages.map(st=>{
+    let cards=sites.map((s,i)=>({site:s,idx:i,...scoreSite(s)})).filter(r=>(r.site.status||'Sourced')===st);
+    return`<div class="kanban-col" data-stage="${st}" ondragover="kanbanDragOver(event)" ondragleave="kanbanDragLeave(event)" ondrop="kanbanDrop(event)">
+      <h4>${st}<span>${cards.length}</span></h4>
+      ${cards.map(r=>`<div class="kanban-card ${tierClass[r.tier]}" draggable="true" data-idx="${r.idx}" onclick="editSite(${r.idx})" ondragstart="kanbanDragStart(event)" ondragend="kanbanDragEnd(event)">
+        <div style="font-weight:600;font-size:0.9rem">${r.site.name}</div>
+        <div style="font-size:0.75rem;color:#64748b">${r.site.address}</div>
+        <div style="font-size:0.8rem;margin-top:4px"><b>${r.total.toFixed(0)}</b>/100</div>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+function kanbanDragStart(e){draggedIdx=parseInt(e.target.dataset.idx);e.target.classList.add('dragging');}
+function kanbanDragEnd(e){e.target.classList.remove('dragging');draggedIdx=null;}
+function kanbanDragOver(e){e.preventDefault();e.currentTarget.classList.add('drag-over');}
+function kanbanDragLeave(e){e.currentTarget.classList.remove('drag-over');}
+function kanbanDrop(e){
+  e.preventDefault();e.currentTarget.classList.remove('drag-over');
+  if(draggedIdx===null)return;
+  let newStage=e.currentTarget.dataset.stage;
+  sites[draggedIdx].status=newStage;
+  localStorage.setItem('alpha-sites',JSON.stringify(sites));
+  render();renderKanban();
+  draggedIdx=null;
+}
 </script><div class="modal" id="costModal"><div class="modal-content" style="max-width:600px">
 <h2 id="cost-site-name">Cost Breakdown</h2>
 <div style="display:flex;gap:24px;flex-wrap:wrap">
