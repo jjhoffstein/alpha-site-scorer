@@ -6,6 +6,8 @@ AI-Powered Site Viability Scoring System for rapid school campus evaluation.
 
 **[View Dashboard](https://jjhoffstein.github.io/alpha-site-scorer/)**
 
+> **Deployment ownership:** GitHub Pages is intentionally disabled for this repository. The live dashboard is deployed from the [`jjhoffstein.github.io` portfolio repository](https://github.com/jjhoffstein/jjhoffstein.github.io/tree/master/alpha-site-scorer). Do not enable Pages here; doing so would replace the portfolio version at the same URL.
+
 ## Features
 
 ### Site Scoring
